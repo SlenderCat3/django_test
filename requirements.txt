@@ -5,5 +5,5 @@ whitenoise==6.2.0
 fitz
 pytesseract
 numpy
-cv2
-PIL
+opencv-python
+Pillow
