@@ -1,6 +1,12 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseNotFound
 
+import numpy as np
+import pytesseract
+import fitz
+from PIL import Image
+import cv2
+
 # Create your views here.
 
 
