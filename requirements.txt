@@ -5,7 +5,6 @@ whitenoise==6.2.0
 fitz
 pytesseract
 numpy
-libgl1-mesa-dev
-opencv-python
+opencv-python-headless
 Pillow
 PyMuPDF
