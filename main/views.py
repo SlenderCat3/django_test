@@ -80,7 +80,14 @@ def digitize_image(img, mask_img):
         for y in range(5):
             res += "<tr>"
             for x in range(48):
-                res += f"<td style = \"border:1px solid black; border-collapse: collapse\">{int(round(cells[y, x].cover, 1) * 10)}</td>"
+                val = int(round(cells[y, x].cover, 1) * 10)
+                col = "#FFFFFF"
+                if (val == 10):
+                    col = "#888888"
+                elif (val > 0):
+                    col = "#DCDCDC"
+
+                res += f"<td style = \"border:1px solid black; border-collapse: collapse; text-align: center; bgcolor=\"{col}\"\">{val}</td>"
             res += "</tr>"
         
         return res
