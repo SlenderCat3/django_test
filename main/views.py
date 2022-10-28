@@ -6,6 +6,7 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import pytesseract
+import dig_img
 
 # Create your views here.
 
@@ -16,36 +17,19 @@ def index(request):
 def test(request):
     # return HttpResponse("<h4>about</h4>")
     resp = ""
-    pdffile = "PGIdata_2015-4.pdf"
 
-    img = cv2.imread("PGIdata_2015-4 (1)_1.png")
+    img = cv2.imread("output_32.png")
 
-    resp = img.shape
+    originalImage = img.copy()
+    grayImage = cv2.cvtColor(originalImage, cv2.COLOR_RGB2GRAY)
+    (thresh, img) = cv2.threshold(grayImage, 127, 255, cv2.THRESH_BINARY)
 
+
+    mask_img = cv2.imread("mask.png")
+    mask_img = cv2.cvtColor(mask_img, cv2.COLOR_BGR2RGB)
+
+    result = dig_img.digitize_image(img, mask_img)
+
+    resp += result
 
     return HttpResponse(resp)
-
-
-
-class Cell:
-    def __init__(self, x, y):
-        self.row = x # строка
-        self.column = y # столбец
-        self.x = -1
-        self.y = -1
-        self.area = 0
-        self.black_area = 0
-        self.cover = 0.0 # покрытие черными пикселями
-
-    def calc(self):
-        if (self.area > 0):
-            if (self.black_area > 0):
-                self.cover = self.black_area / self.area
-
-class Color:
-  def __init__(self, color):
-    self.r, self.g, self.b = color
-
-def colors_match(c1, c2):
-    return (c1.r == c2.r and c1.g == c2.g and c1.b == c2.b)
-
