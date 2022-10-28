@@ -6,7 +6,6 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import pytesseract
-from pdf2image import convert_from_path
 
 # Create your views here.
 
@@ -19,15 +18,9 @@ def test(request):
     resp = ""
     pdffile = "PGIdata_2015-4.pdf"
 
-    
-    white = Color((255, 255, 255))
-    black = Color((0, 0, 0))
+    img = cv2.imread("PGIdata_2015-4 (1)_1.png")
 
-    zoom = 4.165
-    
-    images = convert_from_path('PGIdata_2015-4.pdf')
-
-    resp = type(images) + "" + images.shape
+    resp = img.shape
 
 
     return HttpResponse(resp)
