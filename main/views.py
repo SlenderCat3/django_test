@@ -87,7 +87,7 @@ def digitize_image(img, mask_img):
                 elif (val > 0):
                     col = "#DCDCDC"
 
-                res += f"<td style = \"border:1px solid black; border-collapse: collapse; text-align: center; bgcolor=\"{col}\"\">{val}</td>"
+                res += f"<td style = \"border:1px solid black; border-collapse: collapse; text-align: center\" bgcolor=\"{col}\">{val}</td>"
             res += "</tr>"
         
         return res
