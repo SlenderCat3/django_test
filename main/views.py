@@ -61,7 +61,7 @@ def colors_match(c1, c2):
 
 def digitize_image(img, mask_img):
 
-    str_return = ""
+    str_return = "<table>"
 
     white = Color((255, 255, 255))
     black = Color((0, 0, 0))
@@ -79,9 +79,10 @@ def digitize_image(img, mask_img):
         res += "-"*48*4 + "\n"
 
         for y in range(5):
+            res += "<tr>"
             for x in range(48):
-                res += f"{int(round(cells[y, x].cover, 1) * 10):^3}|"
-            res += "\n"
+                res += f"<td>{int(round(cells[y, x].cover, 1) * 10)}</td>"
+            res += "</tr>"
         
         return res
 
@@ -164,4 +165,5 @@ def digitize_image(img, mask_img):
 
                         break
 
+    str_return += "</table>"
     return str_return
