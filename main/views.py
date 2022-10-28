@@ -74,6 +74,17 @@ def digitize_image(img, mask_img):
 
     prev_start = 0
 
+    def cells_to_str(cells):
+        res = ""
+        res += "-"*48*4 + "\n"
+
+        for y in range(5):
+            for x in range(48):
+                res += f"{int(round(cells[y, x].cover, 1) * 10):^3}|"
+            res += "\n"
+        
+        return res
+
     def mask_image(x1, y1):
         ar = []
         for y in range(5):
@@ -131,7 +142,6 @@ def digitize_image(img, mask_img):
             if (cur == 255 and down == 0):
                 prev_start = y
                 # print("-"*10)
-                str_return += "-"*10 + "\n"
                 # print(f"Table start coords: ({y};", end = "")
 
                 for x in range(350, 700):
@@ -148,7 +158,9 @@ def digitize_image(img, mask_img):
                         # str_return += "Date: " + text + "\n"
                         cells, cellsK = mask_image(x, y)
                         # print("Dark squares:", cellsK)
-                        str_return += "Dark squares: " + str(cellsK) + "\n"
+                        # str_return += "Dark squares: " + str(cellsK) + "\n"
+
+                        str_return += cells_to_str(cells)
 
                         break
 
