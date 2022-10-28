@@ -171,9 +171,9 @@ def digitize_image(img, mask_img):
 
                         str_return += cells_to_str(cells)
 
-                        str_return +="</table>"
+                        str_return +="</table><br>"
 
                         break
-
-    str_return += "</table>"
+    
+    str_return += "<img src = \"output_32.png\">"
     return str_return
