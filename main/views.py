@@ -143,9 +143,9 @@ def digitize_image(img, mask_img):
                         # plt.text(x, y, f"({x};{y})", ha = 'right')
 
                         crop_img_text = img[y-75:y, x:x+420]
-                        text = pytesseract.image_to_string(crop_img_text).strip()
+                        # text = pytesseract.image_to_string(crop_img_text).strip()
                         # print("Date:",text)
-                        str_return += "Date: " + text + "\n"
+                        # str_return += "Date: " + text + "\n"
                         cells, cellsK = mask_image(x, y)
                         # print("Dark squares:", cellsK)
                         str_return += "Dark squares: " + str(cellsK) + "\n"
