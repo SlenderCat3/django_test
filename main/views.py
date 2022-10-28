@@ -60,8 +60,8 @@ def colors_match(c1, c2):
 
 
 def digitize_image(img, mask_img):
-
-    str_return = "<table style=\"table-layout: fixed; width: 60%; border:1px solid black; border-collapse: collapse\">"
+    start_table = "<table style=\"table-layout: fixed; width: 60%; border:1px solid black; border-collapse: collapse\">"
+    str_return = ""
 
     white = Color((255, 255, 255))
     black = Color((0, 0, 0))
@@ -167,7 +167,11 @@ def digitize_image(img, mask_img):
                         # print("Dark squares:", cellsK)
                         # str_return += "Dark squares: " + str(cellsK) + "\n"
 
+                        str_return += start_table
+
                         str_return += cells_to_str(cells)
+
+                        str_return +="</table>"
 
                         break
 
