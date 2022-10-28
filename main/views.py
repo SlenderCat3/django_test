@@ -6,7 +6,7 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import pytesseract
-import fitz
+from pdf2image import convert_from_path
 
 # Create your views here.
 
@@ -24,15 +24,10 @@ def test(request):
     black = Color((0, 0, 0))
 
     zoom = 4.165
-    mat = fitz.Matrix(zoom, zoom)
-    doc = fitz.open(pdffile)
-    page = doc.load_page(31)
-    pix = page.get_pixmap(matrix = mat)
-    pil_image = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
-    img = np.array(pil_image)
-    img = img[:, :, ::-1].copy()
+    
+    images = convert_from_path('PGIdata_2015-4.pdf')
 
-    resp = img.shape
+    resp = type(images) + "" + images.shape
 
 
     return HttpResponse(resp)
