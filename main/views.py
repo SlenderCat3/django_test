@@ -175,5 +175,5 @@ def digitize_image(img, mask_img):
 
                         break
     
-    str_return += "<img src = \"output_32.png\">"
+    str_return += "<img src = \"main/images/output_32.png\">"
     return str_return
