@@ -61,7 +61,7 @@ def colors_match(c1, c2):
 
 def digitize_image(img, mask_img):
 
-    str_return = "<table style=\"table-layout: fixed; width: 100%;\">"
+    str_return = "<table style=\"table-layout: fixed; width: 60%; border:1px solid black; border-collapse: collapse\">"
 
     white = Color((255, 255, 255))
     black = Color((0, 0, 0))
