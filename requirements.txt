@@ -7,5 +7,5 @@ matplotlib
 numpy
 opencv-python-headless
 Pillow
-pymupdf==1.18.0
+PyMuPDF==1.18.0
 fitz
