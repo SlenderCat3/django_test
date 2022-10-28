@@ -61,7 +61,7 @@ def colors_match(c1, c2):
 
 def digitize_image(img, mask_img):
 
-    str_return = "<table>"
+    str_return = "<table style=\"table-layout: fixed; width: 100%;\">"
 
     white = Color((255, 255, 255))
     black = Color((0, 0, 0))
@@ -76,12 +76,11 @@ def digitize_image(img, mask_img):
 
     def cells_to_str(cells):
         res = ""
-        res += "-"*48*4 + "\n"
 
         for y in range(5):
             res += "<tr>"
             for x in range(48):
-                res += f"<td>{int(round(cells[y, x].cover, 1) * 10)}</td>"
+                res += f"<td style = \"border:1px solid black; border-collapse: collapse\">{int(round(cells[y, x].cover, 1) * 10)}</td>"
             res += "</tr>"
         
         return res
