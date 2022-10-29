@@ -27,7 +27,7 @@ def test(request):
     mask_img = cv2.imread("main/images/mask.png")
     mask_img = cv2.cvtColor(mask_img, cv2.COLOR_BGR2RGB)
 
-    result, _ = digitize_image(img, mask_img)
+    result, _, _ = digitize_image(img, mask_img)
 
     resp += result
 
