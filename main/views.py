@@ -33,7 +33,7 @@ def test(request):
     end_time = time.time()
 
     resp += result
-    resp += f"Elapsed time: {end_time-start_time} seconds <br>"
+    resp += f"Elapsed time: {round(end_time-start_time, 2)} seconds <br>"
 
     return HttpResponse(resp)
 
@@ -71,7 +71,7 @@ class Cell:
             return
         
         if (self.cover == 1):
-            self.value = "#"
+            self.value = "■"
         
         elif (self.upper_corner and self.lower_corner and (not self.left_corner) and (not self.right_corner)):
             self.value = "|"
@@ -80,7 +80,7 @@ class Cell:
             self.value = "—"
         
         else:
-            self.value = "*"
+            self.value = "●"
 
 
 class Color:
@@ -250,5 +250,4 @@ def digitize_image(img, mask_img):
 
                         break
     
-    str_return += "<img src = \"main/images/output_32.png\">"
     return str_return, str_simple_return, str_char_return
