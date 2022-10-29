@@ -6,6 +6,7 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import pytesseract
+import time
 
 # Create your views here.
 
@@ -26,10 +27,13 @@ def test(request):
 
     mask_img = cv2.imread("main/images/mask.png")
     mask_img = cv2.cvtColor(mask_img, cv2.COLOR_BGR2RGB)
-
+    
+    start_time = time.time()
     result, _, _ = digitize_image(img, mask_img)
+    end_time = time.time()
 
     resp += result
+    resp += f"Elapsed time: {end_time-start_time} seconds <br>"
 
     return HttpResponse(resp)
 
