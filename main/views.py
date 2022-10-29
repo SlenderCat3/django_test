@@ -88,7 +88,7 @@ def colors_match(c1, c2):
 
 
 def digitize_image(img, mask_img):
-    start_table = "<table style=\"table-layout: fixed; width: 60%; border:1px solid black; border-collapse: collapse\">"
+    start_table = "<table style=\"table-layout: fixed; border:1px solid black; border-collapse: collapse\">"
     str_return = ""
     str_simple_return = ""
     str_char_return = ""
@@ -109,7 +109,7 @@ def digitize_image(img, mask_img):
         char_res = ""
 
         for y in range(5):
-            res += "<tr style=\"height:1em\">"
+            res += "<tr style=\"height:20px\">"
             for x in range(48):
                 val = int(round(cells[y, x].cover, 1) * 10)
                 col = "#FFFFFF"
@@ -118,7 +118,7 @@ def digitize_image(img, mask_img):
                 elif (val > 0):
                     col = "#DCDCDC"
 
-                res += f"<td style = \"border:1px solid black; border-collapse: collapse; text-align: center; width: 1em;\" bgcolor=\"{col}\">{cells[y, x].value}</td>"
+                res += f"<td style = \"border:1px solid black; border-collapse: collapse; text-align: center; width: 20px;\" bgcolor=\"{col}\">{cells[y, x].value}</td>"
                 char_res += cells[y, x].value
             res += "</tr>"
             char_res += "\n"
