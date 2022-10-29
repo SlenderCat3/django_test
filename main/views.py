@@ -27,7 +27,7 @@ def test(request):
     mask_img = cv2.imread("main/images/mask.png")
     mask_img = cv2.cvtColor(mask_img, cv2.COLOR_BGR2RGB)
 
-    result = digitize_image(img, mask_img)
+    result, _ = digitize_image(img, mask_img)
 
     resp += result
 
@@ -38,18 +38,43 @@ def test(request):
 
 class Cell:
     def __init__(self, x, y):
-        self.row = x # строка
-        self.column = y # столбец
-        self.x = -1
-        self.y = -1
-        self.area = 0
-        self.black_area = 0
-        self.cover = 0.0 # покрытие черными пикселями
+        self.row = x        # строка
+        self.column = y     # столбец
+        self.x = -1         # координаты левого верхнего угла ячейки, x
+        self.y = -1         # координаты левого верхнего угла ячейки, y
+        self.area = 0       # Общая площадь пикселей
+        self.black_area = 0 # Площадь черных пикселей
+        self.cover = 0.0    # покрытие черными пикселями
 
-    def calc(self):
+        # Существует ли закрашенный пиксель на данном ребре
+        self.upper_corner = False
+        self.left_corner  = False
+        self.right_corner = False
+        self.lower_corner = False
+
+        self.value = " "
+
+
+    # Вычисление покрытия черными пикселями
+    def calc_area(self):
         if (self.area > 0):
             if (self.black_area > 0):
                 self.cover = self.black_area / self.area
+    
+    def calc_value(self):
+        
+        if (self.cover == 0 or self.cover == 1):
+            return
+        
+        if (self.upper_corner and self.lower_corner and (not self.left_corner) and (not self.right_corner)):
+            self.value = "|"
+        
+        elif (self.right_corner and self.left_corner and (not self.upper_corner) and (not self.lower_corner)):
+            self.value = "-"
+        
+        else:
+            self.value = "*"
+
 
 class Color:
   def __init__(self, color):
@@ -62,6 +87,7 @@ def colors_match(c1, c2):
 def digitize_image(img, mask_img):
     start_table = "<table style=\"table-layout: fixed; width: 60%; border:1px solid black; border-collapse: collapse\">"
     str_return = ""
+    str_simple_return = ""
 
     white = Color((255, 255, 255))
     black = Color((0, 0, 0))
@@ -87,53 +113,100 @@ def digitize_image(img, mask_img):
                 elif (val > 0):
                     col = "#DCDCDC"
 
-                res += f"<td style = \"border:1px solid black; border-collapse: collapse; text-align: center\" bgcolor=\"{col}\">{val}</td>"
+                res += f"<td style = \"border:1px solid black; border-collapse: collapse; text-align: center\" bgcolor=\"{col}\">{cells[y, x].value}</td>"
             res += "</tr>"
         
         return res
 
     def mask_image(x1, y1):
+
+        # Создание массива ячеек
         ar = []
         for y in range(5):
             temp = []
             for x in range(48):
                 temp.append(Cell(y, x))
             ar.append(temp)
-
         cells = np.array(ar)
 
+        # (x1, y1) и (x2, y2) - границы рассматриваемого изображения
         x2 = x1 + 1658
         y2 = y1 + 174
 
-        for h in range (y1, y2 + 1):
-            mh = h - y1 + 4
+        # Ширина левой границы маски
+        blue_left_corner_width = 14
 
-            for w in range(x1, x2 + 1):
+        # Цикл по всем пикселям интересующей площади с шагом 2
+        for h in range (y1, y2 + 1, 2):
+
+            # относительная координата Y
+            mh = h - y1 + 4
+            
+            #Счетчик продолжительной синей строки
+            blue_line = 0
+
+            for w in range(x1 + blue_left_corner_width, x2 + 1, 2):
+
+                # относительная координата X
                 mw = w - x1 + 4
 
+                # Получение цвета маски: RGB
                 mask_color = Color(tuple(mask_img[mh, mw]))
+
+                # Получение значения изображения: 0 или 1
                 img_color = img[h, w]
 
+                # Если маска синего цвета
                 if (mask_color.b == 255):
-                    # obj[w, h] = (255, 255, 255)
-                    1
-                    # do something
 
-                elif (mask_color.r != 255 and mask_color.g != 255):
+                    # Счетчик и выход продолжительной синей строки
+                    blue_line += 1
+                    if (blue_line > 20):
+                        break
+                
+                # Если пиксель не синего цвета
+                else:
+                    blue_line = 0
+
+                    # Получение координат ячейки из цвета маски
                     row = mask_color.r // 50
                     column = mask_color.g // 5
+
+                    # Добавление к площади ячейки 1
                     cells[row, column].area += 1    
 
+                    # Если начальный координаты ячейки отсутствуют, задаем их
                     if (cells[row, column].x == -1):
                         cells[row, column].x, cells[row, column].y = w, h
 
+                    # Добавление к закрашенной площади ячейки 1
                     if (img_color == 0):
                         cells[row, column].black_area += 1
 
+                        mask_upper = Color(tuple(mask_img[mh - 1, mw])).b == 255
+                        mask_right = Color(tuple(mask_img[mh, mw + 1])).b == 255
+                        mask_left  = Color(tuple(mask_img[mh, mw - 1])).b == 255
+                        mask_lower = Color(tuple(mask_img[mh + 1, mw])).b == 255
+
+                        if (mask_upper):
+                            cells[row, column].upper_corner = True
+                        
+                        if (mask_right):
+                            cells[row, column].left_corner  = True
+                        
+                        if (mask_left):
+                            cells[row, column].right_corner = True
+                        
+                        if (mask_lower):
+                            cells[row, column].lower_corner = True
+
+
+        # Подсчет закрашенныйх клеток для всего аскаплота
         cellsK = 0
         for y in range(5):
             for x in range(48):
-                cells[y, x].calc()
+                cells[y, x].calc_area()
+                cells[y, x].calc_value()
                 if (round(cells[y, x].cover, 3) >= 0.8):
                     cellsK += 1
 
@@ -148,32 +221,25 @@ def digitize_image(img, mask_img):
 
             if (cur == 255 and down == 0):
                 prev_start = y
-                # print("-"*10)
-                # print(f"Table start coords: ({y};", end = "")
 
                 for x in range(350, 700):
                     cur = img[y + 20, x]
                     right = img[y + 20, x+1]
 
                     if (cur == 255 and right == 0):
-                        # print(f"{x})")
-                        # plt.text(x, y, f"({x};{y})", ha = 'right')
 
                         crop_img_text = img[y-75:y, x:x+420]
                         # text = pytesseract.image_to_string(crop_img_text).strip()
-                        # print("Date:",text)
-                        # str_return += "Date: " + text + "\n"
+
                         cells, cellsK = mask_image(x, y)
-                        # print("Dark squares:", cellsK)
-                        # str_return += "Dark squares: " + str(cellsK) + "\n"
 
                         str_return += start_table
-
                         str_return += cells_to_str(cells)
-
                         str_return +="</table><br>"
+
+                        str_simple_return += str(cellsK) + ", "
 
                         break
     
     str_return += "<img src = \"main/images/output_32.png\">"
-    return str_return
+    return str_return, str_simple_return
