@@ -81,7 +81,7 @@ class Cell:
 
 class Color:
   def __init__(self, color):
-    self.r, self.g, self.b = color
+    [self.r, self.g, self.b] = color
 
 def colors_match(c1, c2):
     return (c1.r == c2.r and c1.g == c2.g and c1.b == c2.b)
@@ -144,36 +144,28 @@ def digitize_image(img, mask_img):
         blue_left_corner_width = 14
 
         # Цикл по всем пикселям интересующей площади с шагом 2
-        for h in range (y1, y2 + 1, 1):
+        for h in range (y1, y2 + 1, 2):
 
             # относительная координата Y
             mh = h - y1 + 4
-            
-            #Счетчик продолжительной синей строки
-            blue_line = 0
 
-            for w in range(x1 + blue_left_corner_width, x2 + 1, 1):
+            for w in range(x1 + blue_left_corner_width, x2 + 1, 2):
 
                 # относительная координата X
                 mw = w - x1 + 4
 
                 # Получение цвета маски: RGB
-                mask_color = Color(tuple(mask_img[mh, mw]))
+                mask_color = Color(mask_img[mh, mw])
+
+                if (colors_match(mask_color, white)):
+                    break
 
                 # Получение значения изображения: 0 или 1
                 img_color = img[h, w]
 
                 # Если маска синего цвета
-                if (mask_color.b == 255):
 
-                    # Счетчик и выход продолжительной синей строки
-                    blue_line += 1
-                    if (blue_line > 20):
-                        break
-                
-                # Если пиксель не синего цвета
-                else:
-                    blue_line = 0
+                if (mask_color.b != 255):
 
                     # Получение координат ячейки из цвета маски
                     row = mask_color.r // 50
@@ -190,10 +182,12 @@ def digitize_image(img, mask_img):
                     if (img_color == 0):
                         cells[row, column].black_area += 1
 
-                        mask_upper = Color(tuple(mask_img[mh - 1, mw])).b == 255
-                        mask_right = Color(tuple(mask_img[mh, mw + 1])).b == 255
-                        mask_left  = Color(tuple(mask_img[mh, mw - 1])).b == 255
-                        mask_lower = Color(tuple(mask_img[mh + 1, mw])).b == 255
+                        check_step = 3
+
+                        mask_upper = Color(mask_img[mh - check_step, mw]).b == 255
+                        mask_right = Color(mask_img[mh, mw + check_step]).b == 255
+                        mask_left  = Color(mask_img[mh, mw - check_step]).b == 255
+                        mask_lower = Color(mask_img[mh + check_step, mw]).b == 255
 
                         if (mask_upper):
                             cells[row, column].upper_corner = True
