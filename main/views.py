@@ -52,7 +52,7 @@ class Cell:
         self.right_corner = False
         self.lower_corner = False
 
-        self.value = " "
+        self.value = "."
 
 
     # Вычисление покрытия черными пикселями
@@ -63,14 +63,17 @@ class Cell:
     
     def calc_value(self):
         
-        if (self.cover == 0 or self.cover == 1):
+        if (self.cover == 0):
             return
         
-        if (self.upper_corner and self.lower_corner and (not self.left_corner) and (not self.right_corner)):
+        if (self.cover == 1):
+            self.value = "#"
+        
+        elif (self.upper_corner and self.lower_corner and (not self.left_corner) and (not self.right_corner)):
             self.value = "|"
         
         elif (self.right_corner and self.left_corner and (not self.upper_corner) and (not self.lower_corner)):
-            self.value = "-"
+            self.value = "—"
         
         else:
             self.value = "*"
@@ -88,6 +91,7 @@ def digitize_image(img, mask_img):
     start_table = "<table style=\"table-layout: fixed; width: 60%; border:1px solid black; border-collapse: collapse\">"
     str_return = ""
     str_simple_return = ""
+    str_char_return = ""
 
     white = Color((255, 255, 255))
     black = Color((0, 0, 0))
@@ -102,6 +106,7 @@ def digitize_image(img, mask_img):
 
     def cells_to_str(cells):
         res = ""
+        char_res = ""
 
         for y in range(5):
             res += "<tr>"
@@ -114,9 +119,11 @@ def digitize_image(img, mask_img):
                     col = "#DCDCDC"
 
                 res += f"<td style = \"border:1px solid black; border-collapse: collapse; text-align: center\" bgcolor=\"{col}\">{cells[y, x].value}</td>"
+                char_res += cells[y, x].value
             res += "</tr>"
+            char_res += "\n"
         
-        return res
+        return res, char_res
 
     def mask_image(x1, y1):
 
@@ -137,7 +144,7 @@ def digitize_image(img, mask_img):
         blue_left_corner_width = 14
 
         # Цикл по всем пикселям интересующей площади с шагом 2
-        for h in range (y1, y2 + 1, 2):
+        for h in range (y1, y2 + 1, 1):
 
             # относительная координата Y
             mh = h - y1 + 4
@@ -145,7 +152,7 @@ def digitize_image(img, mask_img):
             #Счетчик продолжительной синей строки
             blue_line = 0
 
-            for w in range(x1 + blue_left_corner_width, x2 + 1, 2):
+            for w in range(x1 + blue_left_corner_width, x2 + 1, 1):
 
                 # относительная координата X
                 mw = w - x1 + 4
@@ -234,12 +241,16 @@ def digitize_image(img, mask_img):
                         cells, cellsK = mask_image(x, y)
 
                         str_return += start_table
-                        str_return += cells_to_str(cells)
+                        res, char_res = cells_to_str(cells)
+                        str_return += res
                         str_return +="</table><br>"
 
                         str_simple_return += str(cellsK) + ", "
 
+                        str_char_return += char_res
+                        str_char_return += "\n"
+
                         break
     
     str_return += "<img src = \"main/images/output_32.png\">"
-    return str_return, str_simple_return
+    return str_return, str_simple_return, str_char_return

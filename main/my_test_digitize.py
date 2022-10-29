@@ -7,7 +7,7 @@ import views
 
 import time
 
-img = cv2.imread("main/images/output_32.png")
+img = cv2.imread("main/images/output_33.png")
 
 originalImage = img.copy()
 grayImage = cv2.cvtColor(originalImage, cv2.COLOR_RGB2GRAY)
@@ -18,16 +18,18 @@ mask_img = cv2.imread("main/images/mask.png")
 mask_img = cv2.cvtColor(mask_img, cv2.COLOR_BGR2RGB)
 
 start = time.time()
-result, simple_res = views.digitize_image(img, mask_img)
+result, simple_res, char_res = views.digitize_image(img, mask_img)
 end = time.time()
 
 print(simple_res)
 
 print(f"Elapsed: {end-start} seconds")
 
-cut = len(result)//2
-print(result[:cut], end = "")
-print(result[cut:])
+# cut = len(result)//2
+# print(result[:cut], end = "")
+# print(result[cut:])
+
+print(char_res)
 
 # 20 simple
 # 5 with 2 pixels step
