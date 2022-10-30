@@ -35,6 +35,8 @@ def test(request):
     resp += result
     resp += f"Elapsed time: {round(end_time-start_time, 2)} seconds <br>"
 
+    resp += "{% load static %} <img src=\"{% static \"django-test-go-brr\media\output_32.png\" %}\" alt=\"home\" />"
+
     return HttpResponse(resp)
 
 
