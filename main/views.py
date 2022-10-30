@@ -29,7 +29,7 @@ def test(request):
     mask_img = cv2.cvtColor(mask_img, cv2.COLOR_BGR2RGB)
     
     start_time = time.time()
-    result, _, _ = digitize_image(img, mask_img)
+    result, _, _, _ = digitize_image(img, mask_img)
     end_time = time.time()
 
     resp += result
@@ -110,6 +110,9 @@ def digitize_image(img, mask_img):
 
     prev_start = 0
 
+    masked_image = np.ones((img.shape[0], img.shape[1], 3), dtype=np.uint8) * 160
+    # print(masked_image)
+
     def cells_to_str(cells):
         res = ""
         char_res = ""
@@ -147,21 +150,24 @@ def digitize_image(img, mask_img):
         y2 = y1 + 174
 
         # Ширина левой границы маски
-        blue_left_corner_width = 14
+        blue_left_corner_width = 14 - 6
+
+        pixel_step = 2
 
         # Цикл по всем пикселям интересующей площади с шагом 2
-        for h in range (y1, y2 + 1, 2):
+        for h in range (y1, y2 + 1, pixel_step):
 
             # относительная координата Y
             mh = h - y1 + 4
 
-            for w in range(x1 + blue_left_corner_width, x2 + 1, 2):
+            for w in range(x1 + blue_left_corner_width, x2 + 1, pixel_step):
 
                 # относительная координата X
                 mw = w - x1 + 4
 
                 # Получение цвета маски: RGB
                 mask_color = Color(mask_img[mh, mw])
+                masked_image[h, w] = mask_img[mh, mw]
 
                 if (colors_match(mask_color, white)):
                     break
@@ -169,9 +175,11 @@ def digitize_image(img, mask_img):
                 # Получение значения изображения: 0 или 1
                 img_color = img[h, w]
 
-                # Если маска синего цвета
+                # Если маска не синего цвета и не белого
 
                 if (mask_color.b != 255):
+                    
+                    masked_image[h, w] = [255, 255, 255]
 
                     # Получение координат ячейки из цвета маски
                     row = mask_color.r // 50
@@ -186,6 +194,9 @@ def digitize_image(img, mask_img):
 
                     # Добавление к закрашенной площади ячейки 1
                     if (img_color == 0):
+                        
+                        masked_image[h, w] = [0, 0, 0]
+
                         cells[row, column].black_area += 1
 
                         check_step = 3
@@ -197,15 +208,19 @@ def digitize_image(img, mask_img):
 
                         if (mask_upper):
                             cells[row, column].upper_corner = True
+                            masked_image[h, w] = [0, 255, 255]
                         
                         if (mask_right):
-                            cells[row, column].left_corner  = True
+                            cells[row, column].right_corner  = True
+                            masked_image[h, w] = [0, 255, 0]
                         
                         if (mask_left):
-                            cells[row, column].right_corner = True
+                            cells[row, column].left_corner = True
+                            masked_image[h, w] = [255, 0, 0]
                         
                         if (mask_lower):
                             cells[row, column].lower_corner = True
+                            masked_image[h, w] = [255, 255, 0]
 
 
         # Подсчет закрашенныйх клеток для всего аскаплота
@@ -252,4 +267,4 @@ def digitize_image(img, mask_img):
 
                         break
     
-    return str_return, str_simple_return, str_char_return
+    return str_return, str_simple_return, str_char_return, masked_image
