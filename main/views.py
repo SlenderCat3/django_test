@@ -251,7 +251,7 @@ def digitize_image(img, mask_img):
                     if (cur == 255 and right == 0):
 
                         crop_img_text = img[y-75:y, x:x+420]
-                        # text = pytesseract.image_to_string(crop_img_text).strip()
+                        text = pytesseract.image_to_string(crop_img_text).strip()
 
                         cells, cellsK = mask_image(x, y)
 
